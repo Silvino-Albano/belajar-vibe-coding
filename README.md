@@ -46,15 +46,30 @@ Server jalan di `http://localhost:3000` (port dari `.env`).
 
 ## Endpoint
 
-| Method | Path         | Keterangan                          |
-| ------ | ------------ | ----------------------------------- |
-| GET    | `/`          | Info service                        |
-| GET    | `/health`    | Status server + konektivitas DB     |
-| GET    | `/notes`     | List semua note                     |
-| GET    | `/notes/:id` | Detail note                         |
-| POST   | `/notes`     | Buat note — body `{ title, content }` |
-| PUT    | `/notes/:id` | Update note — body `{ title, content }` |
-| DELETE | `/notes/:id` | Hapus note                          |
+| Method | Path | Keterangan |
+| --- | --- | --- |
+| GET | `/` | Info service |
+| GET | `/health` | Status server + konektivitas DB |
+| GET | `/notes` | List semua note |
+| GET | `/notes/:id` | Detail note |
+| POST | `/notes` | Buat note — body `{ title, content }` |
+| PUT | `/notes/:id` | Update note — body `{ title, content }` |
+| DELETE | `/notes/:id` | Hapus note |
+| POST | `/api/users` | Registrasi user baru — body `{ name, email, password }` |
+
+### Registrasi user
+
+`POST /api/users`
+
+```json
+{ "name": "Hamal", "email": "hamal@example.com", "password": "rahasia" }
+```
+
+- Sukses → `200` `{ "data": "OK" }`
+- Email sudah dipakai → `409` `{ "error": "Email sudah terdaftar" }`
+- Body tidak valid → `422` `{ "error": "Data tidak valid" }`
+
+Password disimpan sebagai hash bcrypt, tidak pernah dikembalikan di response.
 
 Contoh:
 
@@ -88,5 +103,8 @@ src/
   routes/
     health.ts       # GET /health
     notes.ts        # CRUD /notes
+    users.routes.ts # POST /api/users (registrasi)
+  services/
+    users-services.ts # logika bisnis registrasi user
 drizzle/            # file migrasi hasil generate
 ```
