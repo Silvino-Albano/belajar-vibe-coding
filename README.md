@@ -56,6 +56,7 @@ Server jalan di `http://localhost:3000` (port dari `.env`).
 | PUT | `/notes/:id` | Update note — body `{ title, content }` |
 | DELETE | `/notes/:id` | Hapus note |
 | POST | `/api/users` | Registrasi user baru — body `{ name, email, password }` |
+| POST | `/api/users/login` | Login — body `{ email, password }`, balikan token |
 
 ### Registrasi user
 
@@ -70,6 +71,20 @@ Server jalan di `http://localhost:3000` (port dari `.env`).
 - Body tidak valid → `422` `{ "error": "Data tidak valid" }`
 
 Password disimpan sebagai hash bcrypt, tidak pernah dikembalikan di response.
+
+### Login user
+
+`POST /api/users/login`
+
+```json
+{ "email": "hamal@example.com", "password": "rahasia" }
+```
+
+- Sukses → `200` `{ "data": "<token-uuid>" }` (token baru disimpan di tabel `user_tokens`)
+- Email tidak terdaftar / password salah → `401` `{ "error": "Email atau password salah" }`
+- Body tidak valid → `422` `{ "error": "Data tidak valid" }`
+
+Field `name` boleh dikirim tetapi diabaikan.
 
 Contoh:
 
@@ -103,8 +118,8 @@ src/
   routes/
     health.ts       # GET /health
     notes.ts        # CRUD /notes
-    users.routes.ts # POST /api/users (registrasi)
+    users.routes.ts # POST /api/users (registrasi), POST /api/users/login
   services/
-    users-services.ts # logika bisnis registrasi user
+    users-services.ts # logika bisnis registrasi & login user
 drizzle/            # file migrasi hasil generate
 ```
